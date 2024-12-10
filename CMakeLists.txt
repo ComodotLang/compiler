@@ -13,6 +13,7 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
+add_subdirectory(src/utilities)
 
 add_executable(comodotc 
     src/cli/main.cpp 
@@ -20,7 +21,10 @@ add_executable(comodotc
 
 llvm_map_components_to_libnames(llvm_libs support core irreader mcjit native)
 
+target_include_directories(comodotc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_include_directories(comodotc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})                                      
 target_link_libraries(comodotc PRIVATE project_options)
+target_link_libraries(comodotc PRIVATE utilities)
 target_link_libraries(comodotc ${REQ_LLVM_LIBRARIES})
 target_compile_definitions(comodotc PRIVATE ${LLVM_DEFINITIONS})
