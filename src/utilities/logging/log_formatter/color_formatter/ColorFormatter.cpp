@@ -1,5 +1,5 @@
 #include <iomanip>
-
+#include <sstream>
 #include "ColorFormatter.h"
 
 std::string ColorFormatter::format(LogType logType, const std::string& message) const {

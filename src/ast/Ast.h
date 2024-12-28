@@ -4,16 +4,6 @@
 #include <vector>
 #include <memory.h>
 
-class IntegerNode;
-class FloatNode;
-class IdentifierNode;
-class BinaryOperationNode;
-class VarDefNode;
-class ReturnNode;
-class BlockNode;
-class FunctionNode;
-class CallNode;
-
 enum BinaryOperator {
     SUB = 0,
     DIV,
@@ -23,15 +13,15 @@ enum BinaryOperator {
 
 class IVisitor {
 public:
-    virtual void visit(IntegerNode& node) = 0;
-    virtual void visit(FloatNode& node) = 0;
-    virtual void visit(IdentifierNode& node) = 0;
-    virtual void visit(BinaryOperationNode& node) = 0;
-    virtual void visit(VarDefNode& node) = 0;
-    virtual void visit(ReturnNode& node) = 0;
-    virtual void visit(BlockNode& node) = 0;
-    virtual void visit(FunctionNode& node) = 0;
-    virtual void visit(CallNode& node) = 0;
+    virtual void visit(class IntegerNode& node) = 0;
+    virtual void visit(class FloatNode& node) = 0;
+    virtual void visit(class IdentifierNode& node) = 0;
+    virtual void visit(class BinaryOperationNode& node) = 0;
+    virtual void visit(class VarDefNode& node) = 0;
+    virtual void visit(class ReturnNode& node) = 0;
+    virtual void visit(class BlockNode& node) = 0;
+    virtual void visit(class FunctionNode& node) = 0;
+    virtual void visit(class CallNode& node) = 0;
 };
 
 class INode {

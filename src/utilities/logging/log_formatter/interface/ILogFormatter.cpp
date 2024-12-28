@@ -1,7 +1,7 @@
 #include <ctime>
 #include <string>
 #include <iomanip>
-
+#include <sstream>
 #include "ILogFormatter.h"
 
 

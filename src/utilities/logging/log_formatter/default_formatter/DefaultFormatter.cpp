@@ -1,5 +1,5 @@
 #include <iomanip>
-
+#include <sstream>
 #include "DefaultFormatter.h"
 
 std::string DefaultFormatter::format(LogType logType, const std::string& message) const {

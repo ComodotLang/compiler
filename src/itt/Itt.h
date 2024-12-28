@@ -19,11 +19,15 @@ class IttNode {
 
 class IttVisitor {
   public:
-    virtual void visit(class IttLiteralNode& node) = 0;
     virtual void visit(class IttBinaryOperationNode& node) = 0;
     virtual void visit(class IttVariableNode& node) = 0;
     virtual void visit(class IttFunctionNode& node) = 0;
     virtual void visit(class IttBlockNode& node) = 0;
+    virtual void visit(class IttIntegerNode& node) = 0;
+    virtual void visit(class IttFloatNode& node) = 0;
+    virtual void visit(class IttBooleanNode& node) = 0;
+    virtual void visit(class IttCharNode& node) = 0;
+    virtual void visit(class IttReturnNode& node) = 0;
 };
 
 enum class IttVisibility {
@@ -32,13 +36,48 @@ enum class IttVisibility {
     PRIVATE
 };
 
-class ITTIntegerNode : public IttNode {
+class IttIntegerNode : public IttNode {
   int _value;
 
   public:
-    ITTIntegerNode(int value) : IttNode(IttType(IttType::INT)), _value(value) {}
+    IttIntegerNode(int value) : IttNode(IttType(IttType::INT)), _value(value) {}
 
     int getValue() const { return _value; }
+
+    void accept(IttVisitor& visitor) override { visitor.visit(*this); }
+};
+
+class IttFloatNode : public IttNode {
+  float _value;
+
+  public:
+  IttFloatNode(float value): IttNode(IttType(IttType::FLOAT)), _value(value) {}
+
+  float getValue() const { return _value; }
+
+  void accept(IttVisitor& visitor) override;
+};
+
+class IttBooleanNode : public IttNode {
+  bool _value;
+
+  public:
+  IttBooleanNode(bool value): IttNode(IttType(IttType::BOOL)), _value(value) {}
+
+  bool getValue() const { return _value; }
+
+  void accept(IttVisitor& visitor) override { visitor.visit(*this); }
+};
+
+class IttCharNode : public IttNode {
+  char _value;
+
+  public:
+  IttCharNode(char value): IttNode(IttType(IttType::CHAR)), _value(value) {}
+
+  char getValue() const { return _value; }
+
+  void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 };
 
 enum class IttBinaryOperation {
@@ -66,23 +105,25 @@ class IttBinaryOperationNode : public IttNode {
         IttType resultType)
         : IttNode(resultType), _lhs(std::move(lhs)), _rhs(std::move(rhs)), _op(op) {}
 
-    const IttNode& getLhs() const { return *_lhs; }
-    const IttNode& getRhs() const { return *_rhs; }
+    IttNode& getLhs() const { return *_lhs; }
+    IttNode& getRhs() const { return *_rhs; }
     IttBinaryOperation getOperation() const { return _op; }
 
-    void accept(IttVisitor& visitor) override;
+    void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 };
 
 class IttVariableNode : public IttNode {
     std::string _name;
-
+    std::unique_ptr<IttNode> _attachedContent;
   public:
-    IttVariableNode(const std::string& name, IttType type)
-        : IttNode(type), _name(name) {}
+    IttVariableNode(const std::string& name, IttType type, std::unique_ptr<IttNode> attached)
+        : IttNode(type), _name(name), _attachedContent(std::move(attached)) {}
 
     const std::string& getName() const { return _name; }
 
-    void accept(IttVisitor& visitor) override;
+    IttNode& getContent() const { return *_attachedContent; }
+
+    void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 };
 
 class IttFunctionNode : public IttNode {
@@ -100,9 +141,9 @@ class IttFunctionNode : public IttNode {
 
     const std::string& getName() const { return _name; }
     const std::vector<std::pair<std::string, IttType>>& getParameters() const { return _parameters; }
-    const IttNode& getBody() const { return *_body; }
+    IttNode& getBody() const { return *_body; }
 
-    void accept(IttVisitor& visitor) override;
+    void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 };
 
 class IttBlockNode : public IttNode {
@@ -110,9 +151,20 @@ class IttBlockNode : public IttNode {
 
   public:
     IttBlockNode(std::vector<std::unique_ptr<IttNode>> statements)
-        : IttNode(IttType(IttType::VOID)), _statements(std::move(statements)) {}
+        : IttNode(IttType(IttType::UNRESOLVED)), _statements(std::move(statements)) {}
 
     const std::vector<std::unique_ptr<IttNode>>& getStatements() const { return _statements; }
 
-    void accept(IttVisitor& visitor) override;
+    void accept(IttVisitor& visitor) override { visitor.visit(*this); }
+};
+
+class IttReturnNode : public IttNode {
+  std::optional<std::unique_ptr<IttNode>> _attachedContent;
+
+  public: 
+  IttReturnNode(std::optional<std::unique_ptr<IttNode>> attached) : IttNode(IttType(IttType::UNRESOLVED)), _attachedContent(std::move(attached)) {}
+
+  const std::optional<std::unique_ptr<IttNode>>& getReturnStmt() const { return _attachedContent; }
+
+  void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 };
