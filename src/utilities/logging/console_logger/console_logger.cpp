@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include "../ILogger.h"
-#include "ConsoleLogger.h"
+#include "console_logger.h"
 
 ConsoleLogger::ConsoleLogger(std::shared_ptr<ILogFormatter> formatter) 
              : _formatter(formatter) {}

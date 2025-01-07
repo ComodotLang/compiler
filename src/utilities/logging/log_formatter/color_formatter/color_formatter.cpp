@@ -1,6 +1,6 @@
 #include <iomanip>
 #include <sstream>
-#include "ColorFormatter.h"
+#include "color_formatter.h"
 
 std::string ColorFormatter::format(LogType logType, const std::string& message) const {
     std::ostringstream formattedMessage;

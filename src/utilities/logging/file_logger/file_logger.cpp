@@ -1,4 +1,4 @@
-#include "FileLogger.h"
+#include "file_logger.h"
 
 FileLogger::FileLogger(const std::string& fileName,
                        std::shared_ptr<ILogFormatter> formatter,

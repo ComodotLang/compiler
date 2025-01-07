@@ -6,7 +6,7 @@
 #include <llvm/IR/Constant.h>
 #include <llvm/IR/Type.h>
 
-#include "../itt/Itt.h"
+#include "../itt/itt.h"
 
 struct ModuleCodegenCtx {
 

@@ -1,4 +1,4 @@
-#include "LoggerManager.h"
+#include "logger_manager.h"
 #include <stdexcept>
 
 LoggerManager& LoggerManager::getInstance() {

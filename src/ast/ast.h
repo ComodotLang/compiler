@@ -3,12 +3,14 @@
 #include <string>
 #include <vector>
 #include <memory.h>
+#include <optional>
+#include <memory>
 
 enum BinaryOperator {
     SUB = 0,
     DIV,
     ADD,
-    MIL
+    MUL
 };
 
 class IVisitor {
@@ -59,7 +61,7 @@ class IdentifierNode : public INode {
 public:
     IdentifierNode(std::string name): _name(name) {}
 
-    const std::string& getName() const { return _name; }
+    std::string getName() const { return _name; }
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
@@ -73,9 +75,8 @@ class BinaryOperationNode : public INode {
 public:
     BinaryOperationNode(std::unique_ptr<INode> lhs, std::unique_ptr<INode> rhs, BinaryOperator op): _lhs(std::move(lhs)), _rhs(std::move(rhs)), _op(op) {}
 
-    const INode& getLhs() const { return *_lhs.get(); }
-
-    const INode& getRhs() const { return *_lhs.get(); }
+    INode& getLhs() const { return *_lhs.get(); }
+    INode& getRhs() const { return *_rhs.get(); }
 
     BinaryOperator getOp() const { return _op; }
 
@@ -90,7 +91,7 @@ class VarDefNode : public INode {
 public:
     VarDefNode(std::string name, std::unique_ptr<INode> content): _name(name), _content(std::move(content)) {}
 
-    const INode& getContent() const { return *_content.get(); }
+    INode& getContent() const { return *_content.get(); }
 
     const std::string& getName() const { return _name; }
 
@@ -101,16 +102,18 @@ public:
 
 class ReturnNode : public INode {
     std::optional<std::unique_ptr<INode>> _retData;
+
 public:
-    ReturnNode(std::optional<std::unique_ptr<INode>> data): _retData(std::move(data)) {}
+    explicit ReturnNode(std::optional<std::unique_ptr<INode>> data)
+        : _retData(std::move(data)) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
     }
 
-    std::optional<INode const&> getRetData() const {
-        if (_retData && *_retData) {
-            return *_retData.value();
+    std::optional<INode*> getRetData() const {
+        if (_retData && _retData.value()) {
+            return _retData.value().get();
         }
         return std::nullopt;
     }
@@ -119,14 +122,14 @@ public:
 class BlockNode : public INode {
     std::vector<std::unique_ptr<INode>> _nodes;
 public:
-    BlockNode(std::vector<std::unique_ptr<INode>> nodes): _nodes(nodes) {}
+    BlockNode(std::vector<std::unique_ptr<INode>>&& nodes): _nodes(std::move(nodes)) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
     }
 
     const std::vector<std::unique_ptr<INode>>& getNodes() const {
-        return _nodes;
+        return std::move(_nodes);
     }
 };
 
@@ -158,7 +161,7 @@ public:
 
     const std::vector<std::tuple<std::string, std::string>>& getArgs() const { return _args; }
 
-    const BlockNode& getBody() const { return *_body.get(); }
+    BlockNode& getBody() const { return *_body.get(); }
 };
 
 class CallNode : INode {
@@ -170,7 +173,7 @@ public:
         std::optional<std::string> alias, 
         std::string name, 
         std::vector<std::unique_ptr<INode>> args) 
-        : _alias(alias), _name(name), _args(args) {}
+        : _alias(alias), _name(name), _args(std::move(args)) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
