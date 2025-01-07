@@ -1,6 +1,6 @@
 #include <iomanip>
 #include <sstream>
-#include "DefaultFormatter.h"
+#include "default_formatter.h"
 
 std::string DefaultFormatter::format(LogType logType, const std::string& message) const {
     std::ostringstream formattedMessage;

@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 
-#include "../ILogger.h"
-#include "../log_formatter/interface/ILogFormatter.h"
-#include "../log_formatter/color_formatter/ColorFormatter.h"
+#include "../ilogger.h"
+#include "../log_formatter/interface/ilog_formatter.h"
+#include "../log_formatter/color_formatter/color_formatter.h"
 
 class ConsoleLogger : public ILogger {
   public:

@@ -4,9 +4,9 @@
 #include <mutex>
 #include <memory>
 
-#include "../ILogger.h"
-#include "../log_formatter/interface/ILogFormatter.h"
-#include "../log_formatter/default_formatter/DefaultFormatter.h"
+#include "../ilogger.h"
+#include "../log_formatter/interface/ilog_formatter.h"
+#include "../log_formatter/default_formatter/default_formatter.h"
 
 class FileLogger : public ILogger {
 public:

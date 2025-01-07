@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "../../ILogger.h"
+#include "../../ilogger.h"
 
 class ILogFormatter {
   public:

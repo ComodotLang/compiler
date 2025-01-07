@@ -1,0 +1,9 @@
+add_library(ast_itt_translator ast_to_itt_translator.cpp ast_to_itt_translator.h)
+
+target_include_directories(ast_itt_translator PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(translator_test ast_to_itt_test.cpp)
+
+target_link_libraries(translator_test PRIVATE ast_itt_translator gtest_main)
+
+add_test(NAME translator_test COMMAND translator_test)

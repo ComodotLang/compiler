@@ -9,6 +9,7 @@ class IttType {
         BOOL,
         VOID,
         FLOAT,
+        IDENTIFIER,
         UNRESOLVED,
     };
 
@@ -30,5 +31,9 @@ class IttType {
         case UNRESOLVED: return "Unresolved";
         default: return "Unknown";
         }
+    }
+
+    bool operator==(const IttType& other) const {
+      return _kind == other._kind;
     }
 };

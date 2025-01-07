@@ -1,5 +1,5 @@
 #pragma once
-#include "../interface/ILogFormatter.h"
+#include "../interface/ilog_formatter.h"
 
 class ColorFormatter : public ILogFormatter {
   public:
