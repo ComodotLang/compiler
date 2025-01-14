@@ -69,11 +69,11 @@ public:
 };
 
 class BinaryOperationNode : public INode {
-    std::unique_ptr<INode> _lhs;
-    std::unique_ptr<INode> _rhs;
+    std::shared_ptr<INode> _lhs;
+    std::shared_ptr<INode> _rhs;
     BinaryOperator _op;
 public:
-    BinaryOperationNode(std::unique_ptr<INode> lhs, std::unique_ptr<INode> rhs, BinaryOperator op): _lhs(std::move(lhs)), _rhs(std::move(rhs)), _op(op) {}
+    BinaryOperationNode(std::shared_ptr<INode> lhs, std::shared_ptr<INode> rhs, BinaryOperator op): _lhs(lhs), _rhs(rhs), _op(op) {}
 
     INode& getLhs() const { return *_lhs.get(); }
     INode& getRhs() const { return *_rhs.get(); }
@@ -87,9 +87,9 @@ public:
 
 class VarDefNode : public INode {
     std::string _name;
-    std::unique_ptr<INode> _content;
+    std::shared_ptr<INode> _content;
 public:
-    VarDefNode(std::string name, std::unique_ptr<INode> content): _name(name), _content(std::move(content)) {}
+    VarDefNode(std::string name, std::shared_ptr<INode> content): _name(name), _content(content) {}
 
     INode& getContent() const { return *_content.get(); }
 
@@ -101,11 +101,11 @@ public:
 };
 
 class ReturnNode : public INode {
-    std::optional<std::unique_ptr<INode>> _retData;
+    std::optional<std::shared_ptr<INode>> _retData;
 
 public:
-    explicit ReturnNode(std::optional<std::unique_ptr<INode>> data)
-        : _retData(std::move(data)) {}
+    explicit ReturnNode(std::optional<std::shared_ptr<INode>> data)
+        : _retData(data) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
@@ -120,16 +120,16 @@ public:
 };
 
 class BlockNode : public INode {
-    std::vector<std::unique_ptr<INode>> _nodes;
+    std::vector<std::shared_ptr<INode>> _nodes;
 public:
-    BlockNode(std::vector<std::unique_ptr<INode>>&& nodes): _nodes(std::move(nodes)) {}
+    BlockNode(std::vector<std::shared_ptr<INode>>& nodes): _nodes(nodes) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
     }
 
-    const std::vector<std::unique_ptr<INode>>& getNodes() const {
-        return std::move(_nodes);
+    const std::vector<std::shared_ptr<INode>>& getNodes() const {
+        return _nodes;
     }
 };
 
@@ -138,7 +138,7 @@ class FunctionNode : public INode {
     std::string _retType; //replace with tokens
     std::string _visibility; //replace with tokens
     std::vector<std::tuple<std::string, std::string>> _args; //replace with tokens
-    std::unique_ptr<BlockNode> _body;
+    std::shared_ptr<BlockNode> _body;
 public:
     FunctionNode(
         std::string name, 
@@ -146,8 +146,8 @@ public:
         std::string visibility, 
         std::vector<std::tuple<std::string, 
         std::string>> args, 
-        std::unique_ptr<BlockNode> body)
-        : _name(name), _retType(retType), _visibility(visibility), _args(args), _body(std::move(body)) {}
+        std::shared_ptr<BlockNode> body)
+        : _name(name), _retType(retType), _visibility(visibility), _args(args), _body(body) {}
     
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
@@ -167,13 +167,13 @@ public:
 class CallNode : INode {
     std::optional<std::string> _alias;
     std::string _name;
-    std::vector<std::unique_ptr<INode>> _args;
+    std::vector<std::shared_ptr<INode>> _args;
 public: 
     CallNode(
         std::optional<std::string> alias, 
         std::string name, 
-        std::vector<std::unique_ptr<INode>> args) 
-        : _alias(alias), _name(name), _args(std::move(args)) {}
+        std::vector<std::shared_ptr<INode>> args) 
+        : _alias(alias), _name(name), _args(args) {}
 
     void accept(IVisitor& visitor) override {
         visitor.visit(*this);
@@ -183,5 +183,5 @@ public:
 
     const std::string& getName() const { return _name; }
 
-    const std::vector<std::unique_ptr<INode>>& getArgs() const { return _args; }
+    const std::vector<std::shared_ptr<INode>>& getArgs() const { return _args; }
 };

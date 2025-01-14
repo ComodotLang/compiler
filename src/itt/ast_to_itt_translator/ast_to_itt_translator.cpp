@@ -3,53 +3,53 @@
 #include "ast_to_itt_translator.h"
 
 
-std::unique_ptr<IttNode> AstToIttTranslator::translate(INode& node) {
+std::shared_ptr<IttNode> AstToIttTranslator::translate(INode& node) {
     node.accept(*this);
-    return std::move(_result);
+    return _result;
 }
 
 void AstToIttTranslator::visit(IntegerNode& node) {
-    this->_result = std::make_unique<IttIntegerNode>(node.getValue());
+    this->_result = std::make_shared<IttIntegerNode>(node.getValue());
 }
 
 void AstToIttTranslator::visit(FloatNode& node) {
-    this->_result = std::make_unique<IttFloatNode>(node.getValue());
+    this->_result = std::make_shared<IttFloatNode>(node.getValue());
 }
 
 void AstToIttTranslator::visit(IdentifierNode& node) {
-    this->_result = std::make_unique<IttIdentifierNode>(node.getName());
+    this->_result = std::make_shared<IttIdentifierNode>(node.getName());
 }
 
 void AstToIttTranslator::visit(BinaryOperationNode& node) {
     auto lhs = this->translate(node.getLhs());
     auto rhs = this->translate(node.getRhs());
 
-    _result = std::make_unique<IttBinaryOperationNode>(
-        std::move(lhs), std::move(rhs), mapBinaryOperator(node.getOp()));
+    _result = std::make_shared<IttBinaryOperationNode>(
+        lhs, rhs, mapBinaryOperator(node.getOp()));
 }
 
 void AstToIttTranslator::visit(VarDefNode& node) {
     auto content = this->translate(node.getContent());
-    _result = std::make_unique<IttVariableNode>(node.getName(), std::move(content));
+    _result = std::make_shared<IttVariableNode>(node.getName(), content);
 }
 
 void AstToIttTranslator::visit(ReturnNode& node) {
     if (auto retDataOpt = node.getRetData()) {
         auto retData = this->translate(**retDataOpt);
-        this->_result = std::make_unique<IttReturnNode>(std::move(retData));
+        this->_result = std::make_shared<IttReturnNode>(retData);
     } else {
-        this->_result = std::make_unique<IttReturnNode>(nullptr);
+        this->_result = std::make_shared<IttReturnNode>(nullptr);
     }
 }
 
 void AstToIttTranslator::visit(BlockNode& node) {
-    std::vector<std::unique_ptr<IttNode>> statements;
+    std::vector<std::shared_ptr<IttNode>> statements;
 
     for (const auto& astNode : node.getNodes()) {
         statements.push_back(this->translate(*astNode));
     }
 
-    this->_result = std::make_unique<IttBlockNode>(std::move(statements));
+    this->_result = std::make_shared<IttBlockNode>(statements);
 }
 
 void AstToIttTranslator::visit(FunctionNode& node) {
@@ -65,8 +65,8 @@ void AstToIttTranslator::visit(FunctionNode& node) {
 
     auto body = this->translate(node.getBody());
     IttType returnType = mapType(node.getReturnType());
-    _result = std::make_unique<IttFunctionNode>(
-        node.getName(), parameters, std::move(body));
+    _result = std::make_shared<IttFunctionNode>(
+        node.getName(), parameters, body);
 }
 
 void AstToIttTranslator::visit(CallNode& node) {

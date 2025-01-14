@@ -30,10 +30,12 @@ llvm_map_components_to_libnames(llvm_libs support core irreader mcjit native)
 
 add_executable(comodotc 
     src/cli/main.cpp 
+    src/lexer/lexer.cpp
 )
 
 add_subdirectory(src/utilities)
 add_subdirectory(src/itt/ast_to_itt_translator)
+add_subdirectory(src/lexer)
 
 target_include_directories(comodotc PRIVATE ${LLVM_INCLUDE_DIRS})
 target_compile_definitions(comodotc PRIVATE ${LLVM_DEFINITIONS})

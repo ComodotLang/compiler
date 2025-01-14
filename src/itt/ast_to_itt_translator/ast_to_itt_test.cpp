@@ -36,13 +36,13 @@ TEST(TranslatorTests, TestFloatTranslation) {
 
 
 TEST(TranslatorTests, TestBinaryOpTranslation) {
-    auto lhs = std::make_unique<BinaryOperationNode>(
-        std::make_unique<IntegerNode>(2), 
-        std::make_unique<IntegerNode>(3), 
+    auto lhs = std::make_shared<BinaryOperationNode>(
+        std::make_shared<IntegerNode>(2), 
+        std::make_shared<IntegerNode>(3), 
         ADD
     );
-    auto rhs = std::make_unique<IntegerNode>(1);
-    BinaryOperationNode bop(std::move(lhs), std::move(rhs), SUB);  
+    auto rhs = std::make_shared<IntegerNode>(1);
+    BinaryOperationNode bop(lhs, rhs, SUB);  
     AstToIttTranslator translator;
 
     auto result = translator.translate(bop);
@@ -69,12 +69,12 @@ TEST(TranslatorTests, TestBinaryOpTranslation) {
 }
 
 TEST(TranslatorTests, TestVarDefTranslation) {
-    auto binOp = std::make_unique<BinaryOperationNode>(
-        std::make_unique<IntegerNode>(2), 
-        std::make_unique<IntegerNode>(3), 
+    auto binOp = std::make_shared<BinaryOperationNode>(
+        std::make_shared<IntegerNode>(2), 
+        std::make_shared<IntegerNode>(3), 
         ADD
     );
-    VarDefNode varDef("var1", std::move(binOp));
+    VarDefNode varDef("var1", binOp);
     AstToIttTranslator translator;
     
     auto result = translator.translate(varDef);
@@ -97,16 +97,16 @@ TEST(TranslatorTests, TestVarDefTranslation) {
 }
 
 TEST(TranslatorTests, TestBlockTranslation) {
-    auto binOp = std::make_unique<BinaryOperationNode>(
-        std::make_unique<IntegerNode>(2), 
-        std::make_unique<IntegerNode>(3), 
+    auto binOp = std::make_shared<BinaryOperationNode>(
+        std::make_shared<IntegerNode>(2), 
+        std::make_shared<IntegerNode>(3), 
         ADD
     );
 
-    std::vector<std::unique_ptr<INode>> nodes;
-    nodes.push_back(std::move(binOp));
+    std::vector<std::shared_ptr<INode>> nodes;
+    nodes.push_back(binOp);
 
-    BlockNode block(std::move(nodes));
+    BlockNode block(nodes);
     AstToIttTranslator translator;
 
     auto result = translator.translate(block);
@@ -115,10 +115,10 @@ TEST(TranslatorTests, TestBlockTranslation) {
     auto* blockNode = dynamic_cast<IttBlockNode*>(result.get());
     ASSERT_NE(blockNode, nullptr);
 
-    std::vector<std::unique_ptr<IttNode>> sttmts = std::move(blockNode->getStatements());
+    std::vector<std::shared_ptr<IttNode>> sttmts = blockNode->getStatements();
     ASSERT_EQ(sttmts.size(), 1);
 
-    auto sttmt = std::move(sttmts[0]);
+    auto sttmt = sttmts[0];
 
     auto* content = dynamic_cast<IttBinaryOperationNode*>(&*sttmt);
     ASSERT_NE(content, nullptr);

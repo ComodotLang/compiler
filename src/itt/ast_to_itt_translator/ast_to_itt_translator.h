@@ -6,9 +6,9 @@
 
 class AstToIttTranslator : public IVisitor {
   private:
-    std::unique_ptr<IttNode> _result;
+    std::shared_ptr<IttNode> _result;
   public:
-    std::unique_ptr<IttNode> translate(INode& node);
+    std::shared_ptr<IttNode> translate(INode& node);
 
     void visit(IntegerNode& node) override;
     void visit(FloatNode& node) override;

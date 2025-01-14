@@ -144,16 +144,16 @@ enum class IttBinaryOperation {
 };
 
 class IttBinaryOperationNode : public IttNode {
-    std::unique_ptr<IttNode> _lhs;
-    std::unique_ptr<IttNode> _rhs;
+    std::shared_ptr<IttNode> _lhs;
+    std::shared_ptr<IttNode> _rhs;
     IttBinaryOperation _op;
 
   public:
     IttBinaryOperationNode(
-        std::unique_ptr<IttNode> lhs,
-        std::unique_ptr<IttNode> rhs,
+        std::shared_ptr<IttNode> lhs,
+        std::shared_ptr<IttNode> rhs,
         IttBinaryOperation op)
-        : IttNode(), _lhs(std::move(lhs)), _rhs(std::move(rhs)), _op(op) {}
+        : IttNode(), _lhs(lhs), _rhs(rhs), _op(op) {}
 
     IttNode& getLhs() const { return *_lhs; }
     IttNode& getRhs() const { return *_rhs; }
@@ -173,10 +173,10 @@ class IttBinaryOperationNode : public IttNode {
 
 class IttVariableNode : public IttNode {
     std::string _name;
-    std::unique_ptr<IttNode> _attachedContent;
+    std::shared_ptr<IttNode> _attachedContent;
   public:
-    IttVariableNode(const std::string& name, std::unique_ptr<IttNode> attached)
-        : IttNode(), _name(name), _attachedContent(std::move(attached)) {}
+    IttVariableNode(const std::string& name, std::shared_ptr<IttNode> attached)
+        : IttNode(), _name(name), _attachedContent(attached) {}
 
     const std::string& getName() const { return _name; }
 
@@ -195,14 +195,14 @@ class IttVariableNode : public IttNode {
 class IttFunctionNode : public IttNode {
     std::string _name;
     std::vector<std::pair<std::string, IttType>> _parameters;
-    std::unique_ptr<IttNode> _body;
+    std::shared_ptr<IttNode> _body;
 
   public:
     IttFunctionNode(
         const std::string& name,
         std::vector<std::pair<std::string, IttType>> parameters,
-        std::unique_ptr<IttNode> body)
-        : IttNode(), _name(name), _parameters(std::move(parameters)), _body(std::move(body)) {}
+        std::shared_ptr<IttNode> body)
+        : IttNode(), _name(name), _parameters(parameters), _body(body) {}
 
     const std::string& getName() const { return _name; }
     const std::vector<std::pair<std::string, IttType>>& getParameters() const { return _parameters; }
@@ -221,14 +221,14 @@ class IttFunctionNode : public IttNode {
 };
 
 class IttBlockNode : public IttNode {
-    std::vector<std::unique_ptr<IttNode>> _statements;
+    std::vector<std::shared_ptr<IttNode>> _statements;
 
   public:
-    IttBlockNode(std::vector<std::unique_ptr<IttNode>>&& statements)
-        : IttNode(), _statements(std::move(statements)) {}
+    IttBlockNode(std::vector<std::shared_ptr<IttNode>>& statements)
+        : IttNode(), _statements(statements) {}
 
-    std::vector<std::unique_ptr<IttNode>>&& getStatements() {
-        return std::move(_statements);
+    std::vector<std::shared_ptr<IttNode>>& getStatements() {
+        return _statements;
     }
 
 
@@ -247,12 +247,12 @@ class IttBlockNode : public IttNode {
 };
 
 class IttReturnNode : public IttNode {
-  std::optional<std::unique_ptr<IttNode>> _attachedContent;
+  std::optional<std::shared_ptr<IttNode>> _attachedContent;
 
   public: 
-  IttReturnNode(std::optional<std::unique_ptr<IttNode>> attached) : IttNode(), _attachedContent(std::move(attached)) {}
+  IttReturnNode(std::optional<std::shared_ptr<IttNode>> attached) : IttNode(), _attachedContent(attached) {}
 
-  const std::optional<std::unique_ptr<IttNode>>& getReturnStmt() const { return _attachedContent; }
+  const std::optional<std::shared_ptr<IttNode>>& getReturnStmt() const { return _attachedContent; }
 
   void accept(IttVisitor& visitor) override { visitor.visit(*this); }
 
