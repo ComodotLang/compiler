@@ -1,5 +1,7 @@
 use std::{fs::File, io::{BufRead, BufReader}};
 
+use chumsky::prelude::todo;
+
 use crate::lexer::token::SpannedToken;
 
 pub mod token;
@@ -22,7 +24,7 @@ impl From<std::str::Utf8Error> for LexError {
 }
 
 pub fn tokenize<'input>(file: &str) -> Result<Vec<SpannedToken<'input>>, LexError> {
-    let f = File::open(file)?;
+    /*let f = File::open(file)?;
     let tokens: Vec<SpannedToken<'input>> = Vec::new();
     let mut reader = BufReader::new(f);
     
@@ -44,10 +46,11 @@ pub fn tokenize<'input>(file: &str) -> Result<Vec<SpannedToken<'input>>, LexErro
         }
     }
 
-    Ok(tokens)
+    Ok(tokens)*/
+    todo!()
 }
 
 fn tokenize_number<'input>() -> (usize, SpannedToken<'input>) {
-
+    todo!()
 }
 
